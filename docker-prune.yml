@@ -1,0 +1,13 @@
+---
+- hosts: docker
+  become: true
+  become_user: root
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    
+  tasks:
+    - name: Clean up Docker images
+      docker_prune:
+        images: yes
+        images_filters:
+          dangling: false
