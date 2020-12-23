@@ -10,4 +10,4 @@
       docker_prune:
         images: yes
         images_filters:
-          dangling: false
+          dangling: true
