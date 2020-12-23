@@ -1,7 +1,9 @@
 ---
 - hosts: all
 
-  gather_facts: all
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   tasks:
 
     - name: ping
