@@ -1,0 +1,64 @@
+---
+- hosts: shinobi
+  become: true
+  become_user: root
+  tasks:
+    - name: Update apt repo and cache on all Debian/Ubuntu boxes
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    - name: Upgrade all packages on servers
+      apt: upgrade=dist force_apt_get=yes
+
+    - name: git reset
+      shell: git reset --hard
+      args:
+        chdir: /home/Shinobi/
+
+    - name: git pull
+      shell: git pull
+      args:
+        chdir: /home/Shinobi/
+
+    - name: npm install -g npm
+      shell: npm install -g npm
+      args:
+        chdir: /home/Shinobi/
+
+    - name: npm install
+      shell: npm install
+      args:
+        chdir: /home/Shinobi/
+
+    - name: npm audit fix
+      shell: npm audit fix
+      args:
+        chdir: /home/Shinobi/
+
+    - name: pm2 flush
+      shell: pm2 flush
+      args:
+        chdir: /home/Shinobi/
+
+    - name: pm2 restart camera
+      shell: pm2 restart camera
+      args:
+        chdir: /home/Shinobi/
+ 
+    - name: pm2 restart cron
+      shell: pm2 restart cron
+      args:
+        chdir: /home/Shinobi/
+
+    - name: Check if a reboot is needed on all servers
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the box if kernel updated
+      reboot:
+        msg: "Reboot initiated by Ansible for kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
